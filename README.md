@@ -3,10 +3,14 @@
 ## Task 1. Displaying a csv file in a QT widget project
 
 Examine the project QT_display_csv.pro to create a new Qt Widgets project. 
-The task is to output a csv file on the form using a tableWidget.
-In the project there are two csv files. It is possible to display any of them in a QT Widgets project. 
-The task is to create an empty QT project from scratch following the steps bellow. 
+The task is to output a csv file on the form using a tableWidget as shown in the picture. 
+
+![form_with_data](https://github.com/marymex/QT_display_csv/blob/main/form_with_data.jpg)
+
+In the project there a .csv files. The task is to display this file in a QT Widgets project (on the picture above). 
+
 This project is intended to be used for reference only. 
+The task is to create an empty QT project from scratch following the steps bellow. 
 
 ### Designer
 
@@ -14,7 +18,7 @@ Modify the interface of your project using QT Designer.
 
 Examine the form.jpeg picture. It shows the arrangement of the widgets.
 
-![form](  )
+![form](https://github.com/marymex/QT_display_csv/blob/main/form.jpg)
 
 1. Add a vertical layout on your form.
 
@@ -36,11 +40,11 @@ When the user clicks on the menubar, choosing the option "Open" there should be 
 
 Examine the picture choosing_signal_for_the_menu_bar.jpeg for reference. 
 
-![]()
+![chosing_signal_for%20the_menu_bar](https://github.com/marymex/QT_display_csv/blob/main/chosing_signal_for%20the_menu_bar.jpg)
 
 Right-mouth-click on actionOpen (this is a signal) -> go to slot -> triggered().  
 
-![go_to_slot___clicked](https://github.com/marymex/QT_layouts_buttons_tableWidget/blob/master/go_to_slot___clicked.jpg)
+![slot-function-added](https://github.com/marymex/QT_display_csv/blob/main/slot-function-added.jpg)
 
 Those actions auto-generate some code in mainwindow.cpp and mainwindow.h. Namely, they add a slot function which will be run when the user clicks on the "Open option of the menu". 
 In mainwindow.h we can find the declaration of a new function: 
@@ -180,9 +184,9 @@ Now we are going to correct this by implementing "table_model" class.
 This class is a special "layer" between tableView widget and the data stored in the containers "data" and "headers". 
 You can add this class by adding a new class in your project. Examine the pictures for better understanding. 
 
-![]()
+![QT_choosing_model.jpg](https://github.com/marymex/QT_display_csv/blob/main/QT_choosing_model.jpg)
 
-![]()
+![QT_choosing_model2](https://github.com/marymex/QT_display_csv/blob/main/QT_choosing_model2.jpg)
 
 Name your class table_model. As you do that you will see two new filed got added to your project.
 Namely, table_model.h and table_model.cpp.
