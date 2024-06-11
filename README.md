@@ -27,16 +27,17 @@ Examine the form.jpeg picture. It shows the arrangement of the widgets.
 The tableView widget will be used to display the .csv file on the form.
 The lineEdit widget will be used for logging. 
 
-It is desirable to use layouts in your project for style. However, it does not affect functionality.
+It is desirable to use layouts in your project for style and functionality. 
+However, if you are having trouble with the layout you can skip the layout setup for now and return to it later.
 
-3. Add a menu "File" on your form. Inside the menu add two options: "Open" and "Save".
+3. Add a menu "File" on your form ("write here" option at the top). Inside the menu add two options: "Open" and "Save".
 
 ### Slots and signal
 
 In QT some widgets send signals when the user is interracting with the form and some other widgets catch those signals.
-To catch a signal send by one widget, another widget has a function called "slot function". Now we are going to set some slot functions for some widgets. 
+To catch a signal send by one widget, another widget has a function called "slot function". Now we are going to set some slot functions for some widget signals. 
 
-When the user clicks on the menubar, choosing the option "Open" there should be a fileDialogue window which allows the user to choose the csv file for outputting. 
+When the user clicks on the menubar, choosing the option "Open" there should be a fileDialogue window which allows the user to choose the .csv file for display. 
 
 Examine the picture choosing_signal_for_the_menu_bar.jpeg for reference. 
 
@@ -64,11 +65,11 @@ void MainWindow::on_actionOpen_2_triggered()
 
 Inside the body of the function we write code which will be executed when we click on the button.
 
-Simularly, generate a slot-function for the "Save" option.
+Simularly, we need to generate a slot-function for the "Save" option.
 
 ### Reading data 
 
-When the user clicks on the menubar, choosing the option "Open" there should be a fileDialogue window which allows the user to choose the csv file for outputting. 
+When the user clicks on the menubar, choosing the option "Open" there should be a fileDialogue window which allows the user to choose the csv file for display. 
 For this purpose we need to write the following code in on_actionOpen_2_triggered():  
 
 ```sh
@@ -99,13 +100,12 @@ void MainWindow::on_actionOpen_2_triggered()
 }
 ```
 
-At this point you might not be understanding the code of this function. You need to look at it carefully and try to understand it as you continue to work on this task. 
+At this point you might not be understanding the code of this function. You need to look at it carefully and try to understand it as you continue to work on this task (going back and forth in this manual). 
 You will be understanding it bit by bit as you go along.  
 The next part of the task is implementing the loadCSV() function. 
-This function takes the input file name and reads it into data and headers containers.
-Later on those two containers will be used to set the model for the tableView widget. 
-
-That is done in a separate source file "readwrite.cpp". 
+This function takes the input file name and reads it into "data" and "headers" containers.
+Later on, those two containers will be used to set the model for the tableView widget. 
+That is done in a separate source file - "readwrite.cpp":
 
 ```sh
 void loadCSV(const QString &filePath, QList<QList<QString> >& data, QList<QString>& headers)
@@ -143,41 +143,23 @@ In "readwrite.h" you can find the declaration of this function.
 ```sh
 void loadCSV(const QString &filePath, QList<QList<QString> >& data, QList<QString>& headers);
 ```
-You can notice that in this function the fields "data" and "headers" are passed by reference. 
-Those fields are declaredd in mainwindow.h as member-fields of the mainwindow class.
-We use those fields to store data from the .csv table. These containers are also used to set up the model for the tableView widget. 
+You can notice that in this function the fields "data" and "headers" are passed by reference (&). 
+Those fields are declaredd in mainwindow.h as member-fields of the mainwindow class (examile mainwindow.cpp and find them).
+We use those fields to store data from the .csv table. Similarly, these containers are used to set up the model for the tableView widget. 
 
-Now look at the void MainWindow::on_actionOpen_2_triggered() function again. It has the block // SET UP a MODEL FOR TABLEVIEW.
-Those code lines describe setting up a model for the TableVieW widget.
-However, in those lines we create an object of some class "table_model" which we did not declare or implement.
+Now look at the void MainWindow::on_actionOpen_2_triggered() function again. It has the block: "// SET UP a MODEL FOR TABLEVIEW":
 
 ```sh
-void MainWindow::on_actionOpen_2_triggered()
-{
-    // OPEN FILE
-    inputFile = QFileDialog::getOpenFileName(this, "Choose file format .csv", QDir::currentPath());
-    ui->lineEdit->setText("input file loaded");
-    QApplication::processEvents();
-
-    // LOAD THE CSV FILE in _data and _headers
-    try
-    {
-     loadCSV(inputFile, _data, _headers);
-    }
-    catch (const std::runtime_error& e)
-    {
-       QMessageBox::warning(this, "Error", "Could not open file");
-    }
-    ui->lineEdit->setText("data read");
-    QApplication::processEvents();
-
-    // SET UP a MODEL FOR TABLEVIEW
+   // SET UP a MODEL FOR TABLEVIEW
     model = new table_model(_data, _headers, nullptr);
     ui->tableView->setModel(model);
     ui->lineEdit->setText("data displayed");
     QApplication::processEvents();
-}
 ```
+
+Those code lines describe setting up a model for the TableVieW widget.
+However, in those lines we create an object of some class "table_model" which we did not declare or implement yet.
+
 ### Implementing model for tableView (MV approach)
 
 Now we are going to correct this by implementing "table_model" class. 
@@ -190,17 +172,19 @@ You can add this class by adding a new class in your project. Examine the pictur
 
 Name your class table_model. As you do that you will see two new filed got added to your project.
 Namely, table_model.h and table_model.cpp.
-First those two files have almost empty functions in them.
+First those two files have unfinished functions in them.
 You need to implement those functions like this:
 
 ```sh
 table_model::table_model(const QList<QList<QString> >& ddata, const QList<QString>& hheaders, QObject *parent)
     : QAbstractTableModel(parent), _data(ddata), _headers(hheaders)
 {
+  // constructor
 }
 
 QVariant table_model::headerData(int section, Qt::Orientation orientation, int role) const
 {
+   // access to headers 
     if (role != Qt::DisplayRole)
         return QVariant();
 
@@ -212,6 +196,7 @@ QVariant table_model::headerData(int section, Qt::Orientation orientation, int r
 
 int table_model::rowCount(const QModelIndex &parent) const
 {
+  // access to row count
     if (parent.isValid())
         return 0;
 
@@ -220,6 +205,7 @@ int table_model::rowCount(const QModelIndex &parent) const
 
 int table_model::columnCount(const QModelIndex &parent) const
 {
+  // access to column count
     if (parent.isValid())
         return 0;
 
@@ -231,9 +217,9 @@ int table_model::columnCount(const QModelIndex &parent) const
 
 QVariant table_model::data(const QModelIndex &index, int role) const
 {
+  // access to data
     if (!index.isValid() || role != Qt::DisplayRole)
         return QVariant();
-
 
     return _data[index.row()][index.column()] ;
 }
@@ -253,13 +239,13 @@ public:
     // Header:
     QVariant headerData(int section,
                         Qt::Orientation orientation,
-                        int role = Qt::DisplayRole) const override;
+                        int role = Qt::DisplayRole) const override; // HERE
 
     // Basic functionality:
-    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
-    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override; // HERE
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override; // HERE
 
-    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
+    QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override; // HERE
 
 private:
     const QList<QList<QString> >& _data;
@@ -267,11 +253,12 @@ private:
 };
 ```
 
-Those functions provide functionality to the model which acts basically as an interface for data display on the tableView widget. 
+Those functions provide functionality to the model which acts basically as an interface for data display on the tableView widget.
+So you can imagine that there is a "hidden" class "QAbstractTableModel" which is inherited and it has some functionality which is used by the tableView model but not really seen.
 
-At this point we ended the first part of the project which deals with "Open". Now the applications should be able to display the table.
+At this point we ended the first part of the project which deals with "Open" option of the menu. Now the applications should be able to display the table.
 You can try to run it and check. Possible you will encounter some difficulties in the process. 
-However, try to overcome them and use assistant teacher, your friends or chatGPT for help.
+However, try to overcome them and use assistant teacher, your friends or chatGPT for help. Reread this manual as you do it.
 
 
 ### Saving data
@@ -279,7 +266,7 @@ However, try to overcome them and use assistant teacher, your friends or chatGPT
 The second part of this project is saving the table. 
 At this point the table cannot be edited so saving will only generate a copy of the original file. 
 Editing of the table will be considered later. 
-For now let's imagine that we somehow edited the table through the tableView widget and we want to save it in a different .csv file.
+For now let's imagine that we somehow edited the table through the tableView widget and we intend to save it in a different .csv file.
 Saving the table means taking data from the "data" and "headers" containers and writing it into a .csv file.  
 
 First, You need to generate a slot function for triggering the "Save" option of the menu and implement it.
@@ -312,7 +299,7 @@ The code in mainwindow.h looks like this:
 void on_actionSave_2_triggered();
 ```
 
-You can notice that the function for saving the file is called safeTableToFile().
+You might notice that the function for saving the file is called safeTableToFile().
 We need to implement it in readwrite.cpp 
 Those two files readwrite.cpp and readwrite.h are used to store functions for reading and writing data.
 
